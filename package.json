@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon workshop/server.js",
-    "test": "cross-env PGDATABASE=test_blog_posts tape 'solution/tests/model.test.js' | tap-spec"
+    "dev": "nodemon workshop/server.js"
   },
   "keywords": [],
   "author": "Oliver Phillips <hello@oliverjam.es> (https://oliverjam.es/)",
