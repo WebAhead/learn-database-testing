@@ -80,6 +80,8 @@ Setting environment variables like this will probably fail on Windows. Use the [
 
 </details>
 
+You'll also need to run `npm install tape tap-spec` to install your testing dependencies.
+
 ## Modularising database queries
 
 Currently we're querying our database from within our handler functions. This makes it hard to test the queries in isolation. We _could_ write a `supertest` test for the entire router, but that's overkill when you just care about testing your data logic.

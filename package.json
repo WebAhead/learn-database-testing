@@ -9,11 +9,6 @@
   "keywords": [],
   "author": "Oliver Phillips <hello@oliverjam.es> (https://oliverjam.es/)",
   "license": "ISC",
-  "devDependencies": {
-    "cross-env": "^7.0.2",
-    "tap-spec": "^5.0.0",
-    "tape": "^4.13.2"
-  },
   "dependencies": {
     "dotenv": "^8.2.0",
     "pg": "^7.18.2"
