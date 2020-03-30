@@ -4,15 +4,16 @@ Learn how to set up a test database and make sure your queries work.
 
 ## Setup
 
-We'll be building on an existing database and server, so make sure you've completed this [Postgres & Node workshop](https://github.com/oliverjam/learn-node-postgres) first. You can either add tests to the previous workshop or clone this repo and start fresh. Just make sure you have an existing database.
+You need an existing database to connect to. Ideally complete this [Postgres & Node workshop](https://github.com/oliverjam/learn-node-postgres) first. It contains instructions on creating a database and user.
 
-If you are cloning this repo make sure you add a `.env` file with your Postgres environment variables to point to your existing database. For example:
+1. Clone this repo
+1. Add a `.env` file with your Postgres environment variables to point to your existing database. For example:
 
-```sh
-PGDATABASE=learn_node_postgres
-PGUSER=myuser
-PGPASSWORD=mypassword
-```
+   ```sh
+   PGDATABASE=learn_node_postgres
+   PGUSER=myuser
+   PGPASSWORD=mypassword
+   ```
 
 ## Database build script
 
