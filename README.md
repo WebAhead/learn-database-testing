@@ -174,7 +174,7 @@ test("Can get all users", t => {
     getUsers().then(users => {
       const firstUser = users[0];
       t.equal(firstUser.username, "Sery1976");
-      t.equal(firstUser.age, "28");
+      t.equal(firstUser.age, 28);
       t.end();
     });
   });
@@ -190,7 +190,7 @@ test("Can get all users", t => {
       .then(users => {
         const firstUser = users[0];
         t.equal(firstUser.username, "Sery1976");
-        t.equal(firstUser.age, "28");
+        t.equal(firstUser.age, 28);
         t.end();
       })
       .catch(error => {
