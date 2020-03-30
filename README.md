@@ -90,7 +90,7 @@ Setting environment variables like this will probably fail on Windows. Use the [
 
 </details>
 
-You'll also need to run `npm install tape tap-spec` to install your testing dependencies.
+You'll also need to run `npm install -D tape tap-spec` to install your testing dependencies.
 
 ## Modularising database queries
 
