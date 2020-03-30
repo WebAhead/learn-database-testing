@@ -9,7 +9,7 @@ We'll be building on an existing database and server, so make sure you've comple
 If you are cloning this repo make sure you add a `.env` file with your Postgres environment variables to point to your existing database. For example:
 
 ```sh
-PGDATABASE=blog_posts
+PGDATABASE=learn_node_postgres
 PGUSER=myuser
 PGPASSWORD=mypassword
 ```
@@ -50,13 +50,13 @@ It's not a good idea to run tests against our development database. Since we're 
 Instead let's create a separate test database in our terminal:
 
 ```sh
-psql -c CREATE DATABASE test_blog_workshop
+psql -c CREATE DATABASE test_node_postgres
 ```
 
-We can re-use the same user, since this is just for testing. We just need to give that user permission to access this new database. Replace `myuser` in the following script with the user you created for your `blog_workshop` database.
+We can re-use the same user, since this is just for testing. We just need to give that user permission to access this new database. Replace `myuser` in the following script with the user you created for your `learn_node_postgres` database.
 
 ```sh
-psql -c GRANT ALL PRIVILEGES ON DATABASE test_blog_workshop TO myuser
+psql -c GRANT ALL PRIVILEGES ON DATABASE test_node_postgres TO myuser
 ```
 
 We don't need to worry about initialising the test database with data since our build script will do that before each test. However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
@@ -66,7 +66,7 @@ Create a new entry in the `"scripts"` object of your `package.json`:
 ```json
 {
   "scripts": {
-    "test": "PGDATABASE=test_blog_workshop tape 'workshop/tests/*' | tap-spec"
+    "test": "PGDATABASE=test_node_postgres tape 'workshop/tests/*' | tap-spec"
   }
 }
 ```
@@ -81,7 +81,7 @@ Setting environment variables like this will probably fail on Windows. Use the [
 ```json
 {
   "scripts": {
-    "test": "cross-env PGDATABASE=test_blog_workshop tape 'workshop/tests/*' | tap-spec"
+    "test": "cross-env PGDATABASE=test_node_postgres tape 'workshop/tests/*' | tap-spec"
   }
 }
 ```
