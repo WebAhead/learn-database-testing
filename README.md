@@ -16,7 +16,9 @@ PGPASSWORD=mypassword
 
 ## Database build script
 
-Tests should not influence each other. This is a problem when testing databases because the whole point is to _persist_ data. So in order for each test to run in isolation we should reset the database before reach one. Let's write a function that rebuilds our database using the `init.sql` file.
+Tests should not influence each other. This is a problem when testing databases because the whole point is to _persist_ data. E.g. if our first test adds a new user this might affect subsequent tests.
+
+So in order for each test to run in isolation we should reset the database before each one. Let's write a function that rebuilds our database using the `init.sql` file.
 
 Create a `workshop/database/build.js` file. We can import our database pool object so we can make queries, and use Node's `fs` module to read the contents of our SQL file.
 
