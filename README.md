@@ -147,7 +147,7 @@ Run your server with `npm run dev` to ensure your handlers still work.
 Now we have everything set up to test our database queries. Create a `workshop/tests/model.test.js` file. Import `tape`, your database build script, and your model functions, then write your first test:
 
 ```js
-const test = require("test");
+const test = require("tape");
 const build = require("../database/build");
 const { getUsers, createUser, getPosts } = require("../model");
 
