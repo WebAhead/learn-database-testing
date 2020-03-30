@@ -4,12 +4,14 @@ Learn how to set up a test database and make sure your queries work.
 
 ## Setup
 
-We'll be building on an existing database and server, so make sure you've completed this [Postgres & Node]() workshop first. You can either add tests to the previous workshop or clone this repo and start fresh. Just make sure you have an existing database.
+We'll be building on an existing database and server, so make sure you've completed this [Postgres & Node workshop](https://github.com/oliverjam/learn-node-postgres) first. You can either add tests to the previous workshop or clone this repo and start fresh. Just make sure you have an existing database.
 
 If you are cloning this repo make sure you add a `.env` file with your Postgres environment variables to point to your existing database. For example:
 
 ```sh
 PGDATABASE=blog_posts
+PGUSER=myuser
+PGPASSWORD=mypassword
 ```
 
 ## Database build script
@@ -48,10 +50,16 @@ It's not a good idea to run tests against our development database. Since we're 
 Instead let's create a separate test database in our terminal:
 
 ```sh
-createdb test_blog_workshop
+psql -c CREATE DATABASE test_blog_workshop
 ```
 
-We don't need to worry about initialising it with data since that will happen before every test. However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
+We can re-use the same user, since this is just for testing. We just need to give that user permission to access this new database. Replace `myuser` in the following script with the user you created for your `blog_workshop` database.
+
+```sh
+psql -c GRANT ALL PRIVILEGES ON DATABASE test_blog_workshop TO myuser
+```
+
+We don't need to worry about initialising the test database with data since our build script will do that before each test. However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
 
 Create a new entry in the `"scripts"` object of your `package.json`:
 
