@@ -8,6 +8,7 @@
   },
   "keywords": [],
   "author": "Oliver Phillips <hello@oliverjam.es> (https://oliverjam.es/)",
+  "private": true,
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
