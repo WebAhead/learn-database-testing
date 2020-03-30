@@ -49,16 +49,16 @@ We can import this function in our tests and use it to reset our database before
 
 It's not a good idea to run tests against our development database. Since we're resetting the data before each test we'll lose anything we've added in the course of development.
 
-Instead let's create a separate test database in our terminal:
+Instead let's create a separate test database. Run `psql` in your terminal, then enter this SQL command:
 
 ```sh
-psql -c CREATE DATABASE test_node_postgres
+CREATE DATABASE test_node_postgres;
 ```
 
-We can re-use the same user, since this is just for testing. We just need to give that user permission to access this new database. Replace `myuser` in the following script with the user you created for your `learn_node_postgres` database.
+We can re-use the same user, since this is just for testing. We just need to give that user permission to access this new database. Replace `myuser` in the following SQL command with the user you created for your `learn_node_postgres` database:
 
 ```sh
-psql -c GRANT ALL PRIVILEGES ON DATABASE test_node_postgres TO myuser
+GRANT ALL PRIVILEGES ON DATABASE test_node_postgres TO myuser;
 ```
 
 We don't need to worry about initialising the test database with data since our build script will do that before each test. However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
