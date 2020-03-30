@@ -181,7 +181,7 @@ test("Can get all users", t => {
 });
 ```
 
-We should also add a test to handle errors:
+Run `npm test` to check this passed. Then we should also make sure the test fails if the promise rejects:
 
 ```js
 test("Can get all users", t => {
