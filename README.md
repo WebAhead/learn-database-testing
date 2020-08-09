@@ -173,12 +173,12 @@ test("Can get all users", (t) => {
 });
 ```
 
-Remember we want to reset our database at the start of each test so we know exactly what data we're working with:
+Remember we want to reset our database at the start of each test so we know exactly what data we're working with. The `build` function is running a database query, which means it's asynchronous and so returns a promise. We need to use `.then` to only run our test once the build succeeds:
 
 ```js
 test("Can get all users", (t) => {
   build().then(() => {
-    // now we can test the fresh data
+    // now we can test the freshly built data
   });
 });
 ```
