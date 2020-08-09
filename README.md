@@ -7,19 +7,18 @@ Learn how to set up a test database and make sure your queries work.
 You need an existing database to connect to. Ideally complete this [Postgres & Node workshop](https://github.com/oliverjam/learn-node-postgres) first. It contains instructions on creating a database and user.
 
 1. Clone this repo
-1. Add a `.env` file with your Postgres environment variables to point to your existing database. For example:
-
+1. Add a `.env` file with an environment variable pointing to your existing database. For example:
    ```sh
-   PGDATABASE=learn_node_postgres
-   PGUSER=myuser
-   PGPASSWORD=mypassword
+   DATABASE_URL='postgres://myuser:mypassword@localhost:5432/learn_node_postgres'
    ```
 
 ## Database build script
 
-Tests should not influence each other. This is a problem when testing databases because the whole point is to _persist_ data. E.g. if our first test adds a new user this might affect subsequent tests.
+Right now our local code always talks to the same database running on our machine. This is a problem for automated tests, since if a test changes the database this may affect the result of other tests.
 
-So in order for each test to run in isolation we should reset the database before each one. Let's write a function that rebuilds our database using the `init.sql` file.
+E.g. if we test our "add a user" functionality the database will gain a new user. If we then test "list all users" we would have one extra user each time the tests ran.
+
+It's better to have a separate test database that you reset before each test, so all tests are totally independent from each other. Let's write a JavaScript function that rebuilds our database using the `init.sql` file.
 
 Create a `workshop/database/build.js` file. We can import our database pool object so we can make queries, and use Node's `fs` module to read the contents of our SQL file.
 
@@ -32,7 +31,7 @@ const initPath = path.join(__dirname, "init.sql");
 const initSQL = fs.readFileSync(initPath, "utf-8");
 ```
 
-Then we can write a function that uses the pool object to run the SQL query against the database:
+Then we can write a function that uses the pool object to run all SQL for building our database tables:
 
 ```js
 function build() {
@@ -42,7 +41,7 @@ function build() {
 module.exports = build;
 ```
 
-We can import this function in our tests and use it to reset our database before each test.
+Now we can import this function in our tests and use it to reset our database before each one.
 
 **Important: do not run this in production: it will delete all your users' data.**
 
@@ -50,13 +49,15 @@ We can import this function in our tests and use it to reset our database before
 
 It's not a good idea to run tests against our development database. Since we're resetting the data before each test we'll lose anything we've added in the course of development.
 
-Instead let's create a separate test database owned by the same user:
+Instead let's create a separate test database owned by the same user. Type `psql` to enter the Postgres CLI, then run this command:
 
-```sh
-psql -c "CREATE DATABASE test_node_postgres WITH OWNER myuser"
+```sql
+CREATE DATABASE test_node_postgres WITH OWNER myuser;
 ```
 
-We don't need to worry about initialising the test database with data since our build script will do that before each test. However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
+We don't need to worry about initialising the test database with data since our build script will do that before each test.
+
+However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
 
 Create a new entry in the `"scripts"` object of your `package.json`:
 
@@ -99,7 +100,7 @@ Create a function named `getUsers`. Import your database pool object and use it 
 const db = require("./database/connection");
 
 function getUsers() {
-  return db.query("SELECT * FROM users").then(result => result.rows);
+  return db.query("SELECT * FROM users").then((result) => result.rows);
 }
 
 module.exports = { getUsers };
@@ -127,8 +128,8 @@ Finally extract the query from the `allPosts` handler and export that. Now we ca
 const model = require("./model");
 
 function home(request, response) {
-  model.getUsers().then(users => {
-    const userList = users.map(user => `<li>${user.username}</li>`);
+  model.getUsers().then((users) => {
+    const userList = users.map((user) => `<li>${user.username}</li>`);
     response.writeHead(200, { "content-type": "text/html" });
     response.end(`<ul>${userList.join("")}</ul>`);
   });
@@ -146,7 +147,7 @@ const test = require("tape");
 const build = require("../database/build");
 const { getUsers, createUser, getPosts } = require("../model");
 
-test("Can get all users", t => {
+test("Can get all users", (t) => {
   // test goes here
 });
 ```
@@ -154,7 +155,7 @@ test("Can get all users", t => {
 Remember we want to reset our database at the start of each test so we know exactly what data we're working with:
 
 ```js
-test("Can get all users", t => {
+test("Can get all users", (t) => {
   build().then(() => {
     // now we can test the fresh data
   });
@@ -164,9 +165,9 @@ test("Can get all users", t => {
 Since we know what data the database is initialised with (the stuff inside `init.sql`) we can make assertions about what data should be returned.
 
 ```js
-test("Can get all users", t => {
+test("Can get all users", (t) => {
   build().then(() => {
-    getUsers().then(users => {
+    getUsers().then((users) => {
       const firstUser = users[0];
       t.equal(firstUser.username, "Sery1976");
       t.equal(firstUser.age, 28);
@@ -179,16 +180,16 @@ test("Can get all users", t => {
 Run `npm test` to check this passed. Then we should also make sure the test fails if the promise rejects:
 
 ```js
-test("Can get all users", t => {
+test("Can get all users", (t) => {
   build().then(() => {
     getUsers()
-      .then(users => {
+      .then((users) => {
         const firstUser = users[0];
         t.equal(firstUser.username, "Sery1976");
         t.equal(firstUser.age, 28);
         t.end();
       })
-      .catch(error => {
+      .catch((error) => {
         t.error(error);
         t.end();
       });
@@ -203,17 +204,17 @@ You can make the test fail by breaking your query in `model.js`. Change `"SELECT
 Since our `createPosts` model function doesn't return anything we need to make an additional query to make sure the data was added correctly:
 
 ```js
-test("Can create a new user", t => {
+test("Can create a new user", (t) => {
   build().then(() => {
     const data = { username: "oli", age: 29, location: "London" };
     createUser(data)
       .then(getUsers)
-      .then(users => {
+      .then((users) => {
         const latestUser = users[users.length - 1];
         t.equal(latestUser.username, "oli");
         t.end();
       })
-      .catch(error => {
+      .catch((error) => {
         t.error(error);
         t.end();
       });
