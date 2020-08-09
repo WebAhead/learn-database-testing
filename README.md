@@ -139,7 +139,11 @@ function createUser(data) {
 module.exports = { getUsers, createUser };
 ```
 
-Finally extract the query from the `allPosts` handler and export that. Now we can refactor our handlers to use the new `model` functions. Import your model object and use them in place of the existing queries in your handlers.
+Finally extract the query from the `allPosts` handler and export that.
+
+Now we can refactor our handlers to use the new `model` functions. Import your model object and use them in place of the existing queries in your handlers.
+
+For example:
 
 ```js
 const model = require("./model");
