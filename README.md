@@ -18,7 +18,7 @@ Right now our local code always talks to the same database running on our machin
 
 E.g. if we test our "add a user" functionality the database will gain a new user. If we then test "list all users" we would have one extra user each time the tests ran.
 
-It's better to have a separate test database that you reset before each test, so all tests are totally independent from each other. Let's write a JavaScript function that rebuilds our database using the `init.sql` file.
+It's better to reset everything before each test, so all tests are totally independent from each other and consistent. Let's write a JavaScript function that rebuilds our database using the `init.sql` file.
 
 Create a `workshop/database/build.js` file. We can import our database pool object so we can make queries, and use Node's `fs` module to read the contents of our SQL file.
 
@@ -47,7 +47,7 @@ Now we can import this function in our tests and use it to reset our database be
 
 ## Creating a separate test database
 
-It's not a good idea to run tests against our development database. Since we're resetting the data before each test we'll lose anything we've added in the course of development.
+It's not a good idea to run tests against our development database. Since we're resetting the data before each test we'll keep losing any data we add in the course of development.
 
 Instead let's create a separate test database owned by the same user. Type `psql` to enter the Postgres CLI, then run this command:
 
@@ -57,19 +57,26 @@ CREATE DATABASE test_node_postgres WITH OWNER myuser;
 
 We don't need to worry about initialising the test database with data since our build script will do that before each test.
 
-However we do need to make sure `node-postgres` connects to this different database when our tests are running. We can do that by setting a different `PGDATABASE` environment variable in our test npm script.
+However we do need to make sure `node-postgres` connects to this different database when our tests are running. First add this new database to your `.env` file so our code can use the URL:
+
+```sh
+DATABASE_URL='postgres://myuser:mypassword@localhost:5432/learn_node_postgres'
+TEST_DATABASE_URL='postgres://myuser:mypassword@localhost:5432/test_node_postgres'
+```
+
+Now we need our code to pick the right URL based on whether we're running tests or not. It's common practice to set an environment variable called `NODE_ENV` for this.
 
 Create a new entry in the `"scripts"` object of your `package.json`:
 
 ```json
 {
   "scripts": {
-    "test": "PGDATABASE=test_node_postgres tape 'workshop/tests/*' | tap-spec"
+    "test": "NODE_ENV=test tape 'workshop/tests/*' | tap-spec"
   }
 }
 ```
 
-This overrides the name of the database to use while our tests are running. We're also using a ["glob"](https://en.wikipedia.org/wiki/Glob_%28programming%29) (the `*`) to run Tape against any file in the `workshop/tests/` directory.
+This will let us know whether we're running tests or the normal server. We're also using a ["glob"](https://en.wikipedia.org/wiki/Glob_%28programming%29) (the `*`) to run Tape against any file in the `workshop/tests/` directory.
 
 <details>
 <summary>If you're using Windows</summary>
@@ -79,12 +86,22 @@ Setting environment variables like this will probably fail on Windows. Use the [
 ```json
 {
   "scripts": {
-    "test": "cross-env PGDATABASE=test_node_postgres tape 'workshop/tests/*' | tap-spec"
+    "test": "cross-env NODE_ENV=test tape 'workshop/tests/*' | tap-spec"
   }
 }
 ```
 
 </details>
+
+We now need to tell our database connection code to switch databases while tests are running. Edit your `connection.js` to do this:
+
+```js
+let connectionString = process.env.DATABASE_URL;
+
+if (process.env.NODE_ENV === "test") {
+  connectionString = process.env.TEST_DATABASE_URL;
+}
+```
 
 You'll also need to run `npm install -D tape tap-spec` to install your testing dependencies.
 
