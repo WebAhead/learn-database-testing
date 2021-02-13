@@ -9,7 +9,7 @@ You need an existing database to connect to. Ideally complete this [Postgres & N
 1. Clone this repo
 1. Add a `.env` file with an environment variable pointing to your existing database. For example:
    ```sh
-   DATABASE_URL='postgres://myuser:mypassword@localhost:5432/learn_node_postgres'
+   DATABASE_URL=postgres://myuser:mypassword@localhost:5432/learn_node_postgres
    ```
 
 ## Database build script
@@ -60,8 +60,8 @@ We don't need to worry about initialising the test database with data since our 
 However we do need to make sure `node-postgres` connects to this different database when our tests are running. First add this new database to your `.env` file so our code can use the URL:
 
 ```sh
-DATABASE_URL='postgres://myuser:mypassword@localhost:5432/learn_node_postgres'
-TEST_DATABASE_URL='postgres://myuser:mypassword@localhost:5432/test_node_postgres'
+DATABASE_URL=postgres://myuser:mypassword@localhost:5432/learn_node_postgres
+TEST_DATABASE_URL=postgres://myuser:mypassword@localhost:5432/test_node_postgres
 ```
 
 Now we need our code to pick the right URL based on whether we're running tests or not. It's common practice to set an environment variable called `NODE_ENV` for this.
