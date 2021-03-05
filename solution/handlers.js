@@ -1,18 +1,16 @@
 const model = require("./model");
 
-function home(request, response) {
+function home(req, res) {
   model.getUsers().then(users => {
     // create a list item for each user in the array
     const userList = users.map(user => `<li>${user.username}</li>`);
-    response.writeHead(200, { "content-type": "text/html" });
     // use .join to turn the array into a string
-    response.end(`<ul>${userList.join("")}</ul>`);
+    res.status(200).send(`<ul>${userList.join("")}</ul>`);
   });
 }
 
-function newUser(request, response) {
-  response.writeHead(200, { "content-type": "text/html" });
-  response.end(`
+function newUser(req, res) {
+  res.status(200).send(`
     <form action="create-user" method="POST">
       <label for="username">Username</label>
       <input id="username" name="username">
@@ -25,27 +23,20 @@ function newUser(request, response) {
   `);
 }
 
-function createUser(request, response) {
-  let body = "";
-  request.on("data", chunk => (body += chunk));
-  request.on("end", () => {
-    const searchParams = new URLSearchParams(body);
-    const data = Object.fromEntries(searchParams);
-    model
-      .createUser(data)
-      .then(() => {
-        response.writeHead(302, { location: "/" });
-        response.end();
-      })
-      .catch(error => {
-        console.log(error);
-        response.writeHead(500, { "content-type": "text/html" });
-        response.end(`<h1>Something went wrong saving your data</h1>`);
-      });
-  });
+function createUser(req, res) {
+  const data = req.body
+  model
+    .createUser(data)
+    .then(() => {
+      res.redirect('/');
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).send(`<h1>Something went wrong saving your data</h1>`);
+    });
 }
 
-function allPosts(request, response) {
+function allPosts(req, res) {
   model.getPosts().then(posts => {
     const postsList = posts.map(
       post => `
@@ -55,8 +46,7 @@ function allPosts(request, response) {
       </li>
     `
     );
-    response.writeHead(200, { "content-type": "text/html" });
-    response.end(`<ul>${postsList.join("")}</ul>`);
+    res.status(200).send(`<ul>${postsList.join("")}</ul>`);
   });
 }
 

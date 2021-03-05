@@ -7,6 +7,7 @@ Learn how to set up a test database and make sure your queries work.
 You need an existing database to connect to. Ideally complete this [Postgres & Node workshop](https://github.com/oliverjam/learn-node-postgres) first. It contains instructions on creating a database and user.
 
 1. Clone this repo
+1. `npm i`
 1. Add a `.env` file with an environment variable pointing to your existing database. For example:
    ```sh
    DATABASE_URL=postgres://myuser:mypassword@localhost:5432/learn_node_postgres

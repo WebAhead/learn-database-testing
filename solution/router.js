@@ -1,19 +1,13 @@
+const express = require('express');
+const router = express.Router();
 const handlers = require("./handlers");
 
-function router(request, response) {
-  const { url } = request;
-  if (url === "/") {
-    handlers.home(request, response);
-  } else if (url === "/new-user") {
-    handlers.newUser(request, response);
-  } else if (url === "/create-user") {
-    handlers.createUser(request, response);
-  } else if (url === "/all-posts") {
-    handlers.allPosts(request, response);
-  } else {
-    response.writeHead(404, { "content-type": "text/html" });
-    response.end(`<h1>Not found</h1>`);
-  }
-}
+router.get('/', handlers.home)
+router.get('/new-user', handlers.newUser)
+router.post('/createUser', handlers.createUser)
+router.get('/all-posts', handlers.allPosts)
+router.use((req, res) => {
+  res.status(404).send(`<h1>Not found</h1>`)
+})
 
 module.exports = router;

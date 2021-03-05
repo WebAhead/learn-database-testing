@@ -1,7 +1,12 @@
-const http = require("http");
+const express = require("express");
 const router = require("./router");
 const PORT = process.env.PORT || 3000;
 
-const server = http.createServer(router);
+const app = express();
 
-server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
+app.use(express.urlencoded({ extended: false }))
+app.use(router)
+
+app.listen(PORT, () => {
+    console.log(`Server is listening on http://localhost:${PORT}`);
+});
