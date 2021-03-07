@@ -149,11 +149,10 @@ For example:
 ```js
 const model = require("./model");
 
-function home(request, response) {
+function home(req, res) {
   model.getUsers().then((users) => {
     const userList = users.map((user) => `<li>${user.username}</li>`);
-    response.writeHead(200, { "content-type": "text/html" });
-    response.end(`<ul>${userList.join("")}</ul>`);
+    res.status(200).send(`<ul>${userList.join("")}</ul>`);
   });
 }
 ```
